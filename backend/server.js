@@ -1,22 +1,21 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
-
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.static(path.join(__dirname, '..')));
 
 // Weather Endpoint
 app.get('/api/weather', async (req, res) => {
     try {
+        const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
         const query = req.query.q;
         if (!query) {
             return res.status(400).json({ error: 'Query parameter "q" is required' });
@@ -24,16 +23,20 @@ app.get('/api/weather', async (req, res) => {
 
         const weatherRes = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${query}&days=1&alerts=yes`);
         const data = await weatherRes.json();
+        if (data.error) {
+            console.error('WeatherAPI Error:', data.error);
+        }
         res.json(data);
     } catch (error) {
         console.error('Error fetching weather:', error);
-        res.status(500).json({ error: 'Failed to fetch weather data' });
+        res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
 
 // OpenAI Forecast Endpoint
 app.post('/api/generate-forecast', async (req, res) => {
     try {
+        const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
         const { weatherDetails } = req.body;
         if (!weatherDetails) {
             return res.status(400).json({ error: 'weatherDetails is required' });
@@ -150,6 +153,10 @@ app.get('/api/radar-frames', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`BFF Node Server is running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`BFF Node Server is running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

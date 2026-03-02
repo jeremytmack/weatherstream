@@ -22,7 +22,8 @@ function getLocationAndWeather() {
 
 async function fetchWeather(query) {
     try {
-        const res = await fetch(`/api/weather?q=${query}`);
+        const baseURL = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseURL}/api/weather?q=${query}`);
         const data = await res.json();
 
         if (data && data.current) {
@@ -100,7 +101,8 @@ async function generateForecastAI(data) {
             Active Alerts: ${JSON.stringify(data.alerts || "No active alerts")}
         `;
 
-        const aiResponse = await fetch('/api/generate-forecast', {
+        const baseURL = import.meta.env.VITE_API_URL || '';
+        const aiResponse = await fetch(`${baseURL}/api/generate-forecast`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -139,7 +141,8 @@ async function generateForecastAI(data) {
 
 async function fetchExtendedForecast(lat, lon) {
     try {
-        const res = await fetch(`/api/extended-forecast?lat=${lat}&lon=${lon}`);
+        const baseURL = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseURL}/api/extended-forecast?lat=${lat}&lon=${lon}`);
         const data = await res.json();
 
         if (data && data.daily) {
@@ -445,7 +448,8 @@ async function initRadar(lat, lon) {
 
 async function fetchNearbyCities(lat, lon) {
     try {
-        const res = await fetch(`/api/radar-cities?lat=${lat}&lon=${lon}`);
+        const baseURL = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseURL}/api/radar-cities?lat=${lat}&lon=${lon}`);
         const data = await res.json();
 
         if (data && data.elements) {
@@ -483,7 +487,8 @@ async function fetchRainviewerData(lat, lon) {
         radarLayers = [];
         currentFrame = 0;
 
-        const res = await fetch('/api/radar-frames');
+        const baseURL = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseURL}/api/radar-frames`);
         const data = await res.json();
 
         if (!data?.radar?.past) return;
