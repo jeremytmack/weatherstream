@@ -7,8 +7,20 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+const allowedOrigins = [
+    /^https?:\/\/(?:[a-z0-9-]+\.)*jeremymack\.com$/i, // jeremymack.com and subdomains
+    /^http:\/\/localhost(:\d+)?$/i // Local development
+];
+
 app.use(cors({
-    origin: '*',
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+        if (!origin || allowedOrigins.some(pattern => pattern.test(origin))) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['*']
 }));
