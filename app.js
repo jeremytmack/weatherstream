@@ -444,8 +444,8 @@ async function initRadar(lat, lon) {
         keyboard: false
     }).setView([lat, lon], 7);
 
-    // Apply CartoDB Positron No Labels tile layer for the retro base
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    // Apply CartoDB Dark Matter No Labels tile layer for the retro base
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
         maxZoom: 19
     }).addTo(radarMap);
 
