@@ -176,6 +176,62 @@ app.get('/api/radar-frames', async (req, res) => {
     }
 });
 
+// AI City Abbreviation Endpoint
+app.post('/api/city-abbrs', async (req, res) => {
+    try {
+        const { cities } = req.body;
+        if (!cities || !Array.isArray(cities)) {
+            return res.status(400).json({ error: 'Array of cities is required' });
+        }
+
+        const prompt = `You are a weather broadcasting system. I will provide a list of city names.
+You must return a JSON object mapping each city name exactly as provided to a 3-letter abbreviation.
+Use standard aviation or weather 3-letter codes for known cities (e.g., 'ATLANTA' -> 'ATL', 'CHICAGO' -> 'CHI').
+For smaller cities or towns without an established code, logically create a strictly 3-letter abbreviation using the city name (e.g., 'HARRISBURG' -> 'HRS').
+Return ONLY valid JSON.
+Cities: ${JSON.stringify(cities)}`;
+
+        const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o',
+                response_format: { type: "json_object" },
+                messages: [{ role: 'user', content: prompt }],
+                max_tokens: 200,
+                temperature: 0.1
+            })
+        });
+
+        const aiData = await aiResponse.json();
+
+        if (aiData.error) {
+            console.error("OpenAI API Error:", aiData.error);
+            return res.status(500).json({ error: aiData.error.message });
+        }
+
+        if (aiData.choices && aiData.choices.length > 0) {
+            let aiText = aiData.choices[0].message.content.trim();
+            try {
+                const parsedAbbrs = JSON.parse(aiText);
+                res.json({ abbreviations: parsedAbbrs });
+            } catch (e) {
+                console.error("Failed to parse OpenAI JSON response:", aiText);
+                res.status(500).json({ error: 'Failed to parse abbreviations' });
+            }
+        } else {
+            res.status(500).json({ error: 'No abbreviations generated' });
+        }
+    } catch (error) {
+        console.error('Error generating AI city abbreviations:', error);
+        res.status(500).json({ error: 'Failed to generate abbreviations' });
+    }
+});
+
+
 if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`BFF Node Server is running on http://localhost:${PORT}`);

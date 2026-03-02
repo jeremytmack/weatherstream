@@ -427,25 +427,6 @@ function toggleScreens() {
 
 let radarMap = null;
 let radarLayers = [];
-function getCityAbbr(name) {
-    const common = {
-        'ATLANTA': 'ATL', 'BALTIMORE': 'BWI', 'BIRMINGHAM': 'BHM', 'CHICAGO': 'CHI',
-        'DALLAS': 'DAL', 'DENVER': 'DEN', 'DETROIT': 'DTW', 'HOUSTON': 'HOU',
-        'INDIANAPOLIS': 'IND', 'LOS ANGELES': 'LAX', 'MIAMI': 'MIA', 'NEW YORK': 'NYC',
-        'PHILADELPHIA': 'PHL', 'PHOENIX': 'PHX', 'SAN ANTONIO': 'SAT', 'SAN DIEGO': 'SAN',
-        'SAN FRANCISCO': 'SFO', 'SEATTLE': 'SEA', 'WASHINGTON': 'DCA'
-    };
-    let clean = name.toUpperCase().replace(/[^A-Z]/g, '');
-    if (name.toUpperCase() in common) return common[name.toUpperCase()];
-    if (clean.length <= 3) return clean;
-
-    let abbr = clean[0];
-    let consonants = clean.substring(1).replace(/[AEIOU]/g, '');
-    abbr += consonants.substring(0, 2);
-    while (abbr.length < 3) abbr += clean[abbr.length];
-    return abbr.substring(0, 3);
-}
-
 let currentRadarFrame = 0;
 
 async function initRadar(lat, lon) {
@@ -481,9 +462,31 @@ async function fetchNearbyCities(lat, lon) {
         const data = await res.json();
 
         if (data && data.elements) {
+            // Extract all city names to send in a single batch to the AI
+            const cityNames = [];
             data.elements.forEach(el => {
                 if (el.tags && el.tags.name) {
-                    let cityName = getCityAbbr(el.tags.name);
+                    cityNames.push(el.tags.name);
+                }
+            });
+
+            if (cityNames.length === 0) return;
+
+            // Fetch AI abbreviations
+            const aiRes = await fetch(`${baseURL}/api/city-abbrs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cities: cityNames })
+            });
+            const aiData = await aiRes.json();
+            const abbreviations = aiData.abbreviations || {};
+
+            data.elements.forEach(el => {
+                if (el.tags && el.tags.name) {
+                    const originalName = el.tags.name;
+                    // Use the AI generated abbreviation or fallback cleanly
+                    const cityName = abbreviations[originalName] || originalName.substring(0, 3).toUpperCase();
+
                     const labelIcon = L.divIcon({
                         className: 'radar-city-label',
                         html: cityName,
