@@ -481,12 +481,14 @@ body {
 
 /* Radar Container - overrides leaflet defaults for retro look */
 #radar-map {
-    background-color: #2b3b73;
-    /* Ocean color fallback */
+    background-color: #555566;
+    /* Slate ocean fallback */
 }
 
-/* apply a filter to make the basemap look extra 90s, but NOT the radar droplets! */
-#radar-map .leaflet-layer:first-child {}
+/* apply an exact filter to make the basemap invert into an authentic slate/purple 90s background, but crucially WITHOUT modifying the green/yellow radar droplets! */
+#radar-map .leaflet-layer:first-child {
+    filter: invert(0.8) sepia(0.3) saturate(0.4) hue-rotate(240deg) brightness(0.7) contrast(1.2);
+}
 
 .leaflet-control-attribution {
     display: none !important;

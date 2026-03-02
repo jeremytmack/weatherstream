@@ -427,6 +427,25 @@ function toggleScreens() {
 
 let radarMap = null;
 let radarLayers = [];
+function getCityAbbr(name) {
+    const common = {
+        'ATLANTA': 'ATL', 'BALTIMORE': 'BWI', 'BIRMINGHAM': 'BHM', 'CHICAGO': 'CHI',
+        'DALLAS': 'DAL', 'DENVER': 'DEN', 'DETROIT': 'DTW', 'HOUSTON': 'HOU',
+        'INDIANAPOLIS': 'IND', 'LOS ANGELES': 'LAX', 'MIAMI': 'MIA', 'NEW YORK': 'NYC',
+        'PHILADELPHIA': 'PHL', 'PHOENIX': 'PHX', 'SAN ANTONIO': 'SAT', 'SAN DIEGO': 'SAN',
+        'SAN FRANCISCO': 'SFO', 'SEATTLE': 'SEA', 'WASHINGTON': 'DCA'
+    };
+    let clean = name.toUpperCase().replace(/[^A-Z]/g, '');
+    if (name.toUpperCase() in common) return common[name.toUpperCase()];
+    if (clean.length <= 3) return clean;
+
+    let abbr = clean[0];
+    let consonants = clean.substring(1).replace(/[AEIOU]/g, '');
+    abbr += consonants.substring(0, 2);
+    while (abbr.length < 3) abbr += clean[abbr.length];
+    return abbr.substring(0, 3);
+}
+
 let currentRadarFrame = 0;
 
 async function initRadar(lat, lon) {
@@ -444,8 +463,8 @@ async function initRadar(lat, lon) {
         keyboard: false
     }).setView([lat, lon], 7);
 
-    // Apply CartoDB Dark Matter No Labels tile layer for the retro base
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    // Apply CartoDB Light No Labels tile layer for the retro base
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
         maxZoom: 19
     }).addTo(radarMap);
 
@@ -464,13 +483,12 @@ async function fetchNearbyCities(lat, lon) {
         if (data && data.elements) {
             data.elements.forEach(el => {
                 if (el.tags && el.tags.name) {
-                    let cityName = el.tags.name.toUpperCase();
-                    if (cityName.length > 12) cityName = cityName.substring(0, 12);
+                    let cityName = getCityAbbr(el.tags.name);
                     const labelIcon = L.divIcon({
                         className: 'radar-city-label',
                         html: cityName,
-                        iconSize: [120, 20],
-                        iconAnchor: [60, 10]
+                        iconSize: [60, 20],
+                        iconAnchor: [30, 10]
                     });
                     L.marker([el.lat, el.lon], { icon: labelIcon }).addTo(radarMap);
                 }
@@ -506,7 +524,7 @@ async function fetchRainviewerData(lat, lon) {
         const frames = data.radar.past.slice(-6);
 
         frames.forEach(frame => {
-            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/4/1_1.png`;
+            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/4/1_0.png`;
 
             const tileLayer = L.tileLayer(url, {
                 opacity: 0,
