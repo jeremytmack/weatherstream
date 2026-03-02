@@ -597,6 +597,8 @@ function refreshData() {
 
 setInterval(refreshData, 15 * 60 * 1000);
 
+let screenIntervalTimer;
+
 document.getElementById('enter-button').addEventListener('click', () => {
     document.getElementById('loading-screen').style.display = 'none';
     initMusic();
@@ -604,7 +606,16 @@ document.getElementById('enter-button').addEventListener('click', () => {
         radarMap.invalidateSize();
     }
     toggleScreens();
-    setInterval(toggleScreens, 10000);
+    screenIntervalTimer = setInterval(toggleScreens, 10000);
+});
+
+document.querySelector('.tv-wrapper').addEventListener('click', () => {
+    // Only allow manual skipping after the enter button has actually been pressed
+    if (document.getElementById('loading-screen').style.display === 'none') {
+        clearInterval(screenIntervalTimer);
+        toggleScreens();
+        screenIntervalTimer = setInterval(toggleScreens, 10000); // Reset timer from scratch
+    }
 });
 
 // --- TV Scaling ---
