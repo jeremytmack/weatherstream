@@ -542,7 +542,18 @@ const playlist = [
     'music/jazz4.mp3',
     'music/jazz5.mp3',
     'music/jazz6.mp3',
-    'music/jazz7.mp3'
+    'music/jazz7.mp3',
+    'music/jazz8.mp3',
+    'music/jazz9.mp3',
+    'music/jazz10.mp3',
+    'music/jazz11.mp3',
+    'music/jazz12.mp3',
+    'music/jazz13.mp3',
+    'music/jazz14.mp3',
+    'music/jazz15.mp3',
+    'music/jazz16.mp3',
+    'music/jazz17.mp3',
+    'music/jazz18.mp3'
 ];
 
 let currentSongIndex = 0;
