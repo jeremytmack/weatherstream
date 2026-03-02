@@ -557,9 +557,7 @@ const playlist = [
 ];
 
 let currentSongIndex = 0;
-let audioPlayer = document.createElement('audio');
-audioPlayer.style.display = 'none';
-document.body.appendChild(audioPlayer);
+let audioPlayer = new Audio();
 
 function shufflePlaylist(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -574,9 +572,8 @@ function playNextSong() {
         shufflePlaylist(playlist);
     }
     audioPlayer.src = playlist[currentSongIndex];
-    audioPlayer.load(); // Required by some mobile browsers before playing dynamically swapped sources
     audioPlayer.play().catch(e => {
-        console.error("Autoplay blocked or playback failed:", e);
+        console.log("Autoplay blocked. User interaction required to play music.", e);
     });
     currentSongIndex++;
 }
