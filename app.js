@@ -615,15 +615,27 @@ function fitScreenToTV() {
         const boundsWidth = tvBounds.clientWidth;
         const boundsHeight = tvBounds.clientHeight;
 
-        // Native app size
         const originalWidth = 800;
         const originalHeight = 600;
 
         const scaleX = boundsWidth / originalWidth;
         const scaleY = boundsHeight / originalHeight;
 
-        // We force it to stretch exactly to the CRT bounds
-        screenContainer.style.transform = `scale(${scaleX}, ${scaleY})`;
+        if (window.innerWidth <= 900) {
+            // Keep aspect ratio strictly and center it on portrait/mobile
+            const scale = Math.min(scaleX, scaleY);
+            screenContainer.style.transformOrigin = 'center center';
+            screenContainer.style.position = 'absolute';
+            screenContainer.style.top = '50%';
+            screenContainer.style.left = '50%';
+            screenContainer.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        } else {
+            // Stretch to fit the CRT boundaries on desktop
+            screenContainer.style.transformOrigin = 'top left';
+            screenContainer.style.top = '0';
+            screenContainer.style.left = '0';
+            screenContainer.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
     }
 }
 
