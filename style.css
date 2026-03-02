@@ -2,6 +2,12 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
 }
 
 @font-face {
@@ -23,6 +29,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    cursor: default;
 }
 
 .tv-wrapper {
@@ -649,7 +656,7 @@ body {
     border: 3px solid #fff;
     padding: 15px 30px;
     font-size: 32px;
-    cursor: pointer;
+    cursor: default;
     box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
     text-shadow: 2px 2px 0 #000;
 }
