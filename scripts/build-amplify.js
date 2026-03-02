@@ -25,10 +25,6 @@ fs.copyFileSync(path.join(rootPath, 'server.js'), path.join(computeDir, 'server.
 // Write deploy-manifest.json
 const manifest = {
     version: 1,
-    framework: {
-        name: "vite",
-        version: "7.3.1"
-    },
     routes: [
         {
             path: "/api/*",
@@ -48,13 +44,6 @@ const manifest = {
             }
         }
     ],
-    imageSettings: {
-        sizes: [],
-        domains: [],
-        remotePatterns: [],
-        formats: [],
-        dangerouslyAllowSVG: false
-    },
     computeResources: [
         {
             name: "default",
