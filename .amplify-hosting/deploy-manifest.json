@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "path": "/api/*",
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
+    },
+    {
+      "path": "/*",
+      "fallback": {
+        "kind": "Compute",
+        "src": "default"
+      },
+      "target": {
+        "kind": "Static"
+      }
+    }
+  ],
+  "computeResources": [
+    {
+      "name": "default",
+      "entrypoint": "server.js",
+      "runtime": "nodejs18.x"
+    }
+  ]
+}

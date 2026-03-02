@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Weather Channel</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Oswald:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" crossorigin src="/assets/index-B1WCMV24.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BBRyjHRg.css">
+</head>
+
+<body>
+    <svg width="0" height="0" style="position: absolute;">
+        <clipPath id="crt-bend" clipPathUnits="objectBoundingBox">
+            <path d="M 0.05 0.008 
+                     C 0.3 0.00, 0.7 0.00, 0.95 0.008 
+                     Q 0.992 0.008, 0.992 0.05 
+                     C 1.00 0.3, 1.00 0.7, 0.992 0.95 
+                     Q 0.992 0.992, 0.95 0.992 
+                     C 0.7 1.00, 0.3 1.00, 0.05 0.992 
+                     Q 0.008 0.992, 0.008 0.95 
+                     C 0.00 0.7, 0.00 0.3, 0.008 0.05 
+                     Q 0.008 0.008, 0.05 0.008 Z" />
+        </clipPath>
+    </svg>
+    <div class="tv-wrapper">
+        <img src="/assets/90sscene-BlQJ9-RP.png" class="tv-bg" alt="Vintage TV Background">
+        <div class="tv-screen-bounds">
+            <div class="screen-container">
+                <div id="loading-screen" class="loading-overlay">
+                    <div class="loading-content">
+                        <div id="loading-text" class="loading-text">LOADING WEATHER DATA...</div>
+                        <button id="enter-button" class="enter-btn" style="display: none;">ENTER THE WEATHER
+                            STREAM</button>
+                    </div>
+                </div>
+                <div class="top-row">
+                    <div class="logo-area">
+                        <div class="logo">
+                            <div class="logo-box">
+                                <span class="the">THE</span>
+                                <span class="weather">WEATHER</span>
+                                <span class="channel">STREAM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="title-area">
+                        <h1 id="page-title" class="current-title">Current<br>Conditions</h1>
+                    </div>
+                    <div id="precip-legend" class="precip-legend" style="display: none;">
+                        <div class="precip-row legend-title">PRECIP</div>
+                        <div class="precip-row legend-levels">
+                            <span class="legend-text">Light</span>
+                            <div class="legend-colors">
+                                <div class="c-l1"></div>
+                                <div class="c-l2"></div>
+                                <div class="c-l3"></div>
+                                <div class="c-m1"></div>
+                                <div class="c-m2"></div>
+                                <div class="c-h1"></div>
+                            </div>
+                            <span class="legend-text">Heavy</span>
+                        </div>
+                        <div class="precip-row legend-missing">
+                            <div class="c-inc"></div>
+                            <span class="legend-text">=Incomplete Data</span>
+                        </div>
+                    </div>
+                    <div class="time-area" id="time-area">
+                        <div id="time" class="time-text">5:28:06 PM</div>
+                        <div id="date" class="date-text">MON JUN 16</div>
+                    </div>
+                </div>
+
+                <div class="main-box">
+
+                    <div id="current-conditions-content">
+                        <div class="box-content">
+                            <div class="left-col">
+                                <div class="temp-main">
+                                    <span id="temp">71</span><span class="deg">&deg;</span>
+                                </div>
+                                <div class="condition" id="condition">Fair</div>
+                                <div class="icon-area">
+                                    <!-- Placeholder for weather icon, e.g., cloud with sun -->
+                                    <img id="weather-icon" src="https://openweathermap.org/img/wn/02d@4x.png"
+                                        alt="Weather Icon">
+                                </div>
+                            </div>
+
+                            <div class="right-col">
+                                <div class="city-name" id="city">Atlantic City</div>
+                                <div class="data-row">
+                                    <span class="label">Humidity:</span>
+                                    <span class="value" id="humidity">39%</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="label">Dewpoint:</span>
+                                    <span class="value" id="dewpoint">45&deg;</span>
+                                </div>
+
+                                <div class="data-row">
+                                    <span class="label">Ceiling:</span>
+                                    <span class="value" id="ceiling">Unlimited</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="label">Visibility:</span>
+                                    <span class="value" id="visibility">10 mi.</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="label">Pressure:</span>
+                                    <span class="value" id="pressure">29.94 &darr;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bottom-metrics-row">
+                            <div class="wind-cell">
+                                <span class="label">Wind</span>
+                                <span class="value" id="wind">SE 12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="forecast-today-content" style="display: none;">
+                        <div class="forecast-text" id="text-today">
+                        </div>
+                    </div>
+
+                    <div id="forecast-tonight-content" style="display: none;">
+                        <div class="forecast-text" id="text-tonight">
+                        </div>
+                    </div>
+
+                    <div id="forecast-tomorrow-content" style="display: none;">
+                        <div class="forecast-text" id="text-tomorrow">
+                        </div>
+                    </div>
+
+                    <div id="extended-forecast-content" style="display: none;">
+                        <div class="extended-grid">
+                            <div class="ext-col" id="ext-day1">
+                                <div class="ext-day-title">WED</div>
+                                <img class="ext-icon" src="" alt="Icon">
+                                <div class="ext-desc">Partly<br>Cloudy</div>
+                                <div class="ext-temps">
+                                    <div class="temp-col">
+                                        <span class="temp-label">Lo</span>
+                                        <span class="temp-val lo-val">65</span>
+                                    </div>
+                                    <div class="temp-col">
+                                        <span class="temp-label">Hi</span>
+                                        <span class="temp-val hi-val">84</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ext-col" id="ext-day2">
+                                <div class="ext-day-title">THU</div>
+                                <img class="ext-icon" src="" alt="Icon">
+                                <div class="ext-desc">Scattered<br>T'Storms</div>
+                                <div class="ext-temps">
+                                    <div class="temp-col">
+                                        <span class="temp-label">Lo</span>
+                                        <span class="temp-val lo-val">65</span>
+                                    </div>
+                                    <div class="temp-col">
+                                        <span class="temp-label">Hi</span>
+                                        <span class="temp-val hi-val">83</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ext-col" id="ext-day3">
+                                <div class="ext-day-title">FRI</div>
+                                <img class="ext-icon" src="" alt="Icon">
+                                <div class="ext-desc">Partly<br>Cloudy</div>
+                                <div class="ext-temps">
+                                    <div class="temp-col">
+                                        <span class="temp-label">Lo</span>
+                                        <span class="temp-val lo-val">65</span>
+                                    </div>
+                                    <div class="temp-col">
+                                        <span class="temp-label">Hi</span>
+                                        <span class="temp-val hi-val">84</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="radar-content"
+                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    <div id="radar-map" style="width: 100%; height: 100%;"></div>
+                </div>
+
+                <div class="bottom-bar">
+                    <div class="bottom-text">
+                        <span id="bottom-temp" class="bottom-label">Temp: 71&deg;F</span>
+                        <marquee class="ticker">Local conditions based on observations. Additional weather info at
+                            weather.com...</marquee>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SVG Overlay for precise drop shadow along the curve -->
+            <svg class="crt-shadow-overlay" viewBox="0 0 1 1" preserveAspectRatio="none">
+                <defs>
+                    <filter id="crt-blur" x="-0.1" y="-0.1" width="1.2" height="1.2">
+                        <feGaussianBlur stdDeviation="0.015" />
+                    </filter>
+                </defs>
+                <!-- A thich black stroke blurred to create an inner shadow that hugs the curve -->
+                <path d="M 0.05 0.008 
+                         C 0.3 0.00, 0.7 0.00, 0.95 0.008 
+                         Q 0.992 0.008, 0.992 0.05 
+                         C 1.00 0.3, 1.00 0.7, 0.992 0.95 
+                         Q 0.992 0.992, 0.95 0.992 
+                         C 0.7 1.00, 0.3 1.00, 0.05 0.992 
+                         Q 0.008 0.992, 0.008 0.95 
+                         C 0.00 0.7, 0.00 0.3, 0.008 0.05 
+                         Q 0.008 0.008, 0.05 0.008 Z" fill="none" stroke="rgba(0, 0, 0, 0.85)" stroke-width="0.04"
+                    filter="url(#crt-blur)" />
+            </svg>
+
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>
