@@ -592,16 +592,6 @@ getLocationAndWeather();
 
 function refreshData() {
     isRefreshing = true;
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingText = document.getElementById('loading-text');
-    const enterBtn = document.getElementById('enter-button');
-
-    if (loadingScreen && loadingText && enterBtn) {
-        enterBtn.style.display = 'none';
-        loadingText.innerText = "GETTING LATEST WEATHER DATA...";
-        loadingScreen.style.display = 'flex';
-    }
-
     getLocationAndWeather();
 }
 
