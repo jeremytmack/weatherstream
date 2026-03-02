@@ -44,6 +44,18 @@ const manifest = {
             }
         }
     ],
+    framework: {
+        name: "express",
+        version: "4.18.2"
+    },
+    imageSettings: {
+        sizes: [],
+        domains: [],
+        remotePatterns: [],
+        formats: [],
+        minimumCacheTTL: 60,
+        dangerouslyAllowSVG: false
+    },
     computeResources: [
         {
             name: "default",

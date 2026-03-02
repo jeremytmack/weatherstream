@@ -19,11 +19,23 @@
       }
     }
   ],
+  "framework": {
+    "name": "express",
+    "version": "4.18.2"
+  },
+  "imageSettings": {
+    "sizes": [],
+    "domains": [],
+    "remotePatterns": [],
+    "formats": [],
+    "minimumCacheTTL": 60,
+    "dangerouslyAllowSVG": false
+  },
   "computeResources": [
     {
       "name": "default",
       "entrypoint": "server.js",
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     }
   ]
 }
