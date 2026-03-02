@@ -451,7 +451,7 @@ async function initRadar(lat, lon) {
 
     await Promise.all([
         fetchNearbyCities(lat, lon),
-        fetchRainviewerData(lat, lon)
+        fetchNoaaRadarData(lat, lon)
     ]);
 }
 
@@ -505,7 +505,7 @@ async function fetchNearbyCities(lat, lon) {
 let currentFrame = 0;
 let radarInterval = null;
 
-async function fetchRainviewerData(lat, lon) {
+async function fetchNoaaRadarData(lat, lon) {
     try {
         // Clear previous layers + interval
         if (radarInterval) {
@@ -523,37 +523,29 @@ async function fetchRainviewerData(lat, lon) {
 
         if (!data?.radar?.past) return;
 
-        // Use fewer frames for classic broadcast feel
-        const frames = data.radar.past.slice(-6);
-
-        frames.forEach(frame => {
-            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/4/1_0.png`;
-
-            const tileLayer = L.tileLayer(url, {
+        data.radar.past.forEach(frame => {
+            const wmsLayer = L.tileLayer.wms('https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows', {
+                layers: 'conus_bref_qcd',
+                format: 'image/png',
+                transparent: true,
                 opacity: 0,
+                time: frame.time, // Inject native NOAA ISO-timestamp extracted from GetCapabilities
                 zIndex: 10,
                 pane: 'overlayPane'
             });
 
-            tileLayer.addTo(radarMap);
-            radarLayers.push(tileLayer);
+            wmsLayer.addTo(radarMap);
+            radarLayers.push(wmsLayer);
         });
 
-        if (radarLayers.length === 0) return;
-
-        // Show first frame immediately
-        radarLayers[0].setOpacity(0.7);
-
-        radarInterval = setInterval(() => {
-            radarLayers[currentFrame].setOpacity(0);
-
-            currentFrame = (currentFrame + 1) % radarLayers.length;
-
-            radarLayers[currentFrame].setOpacity(0.7);
-        }, 1100); // slower for 90s vibe
+        if (radarLayers.length > 0) {
+            // Show first frame immediately
+            radarLayers[0].setOpacity(0.7);
+            radarInterval = setInterval(animateRadar, 1100); // slower 90s vibe interval
+        }
 
     } catch (e) {
-        console.error("Error fetching RainViewer data:", e);
+        console.error("Error fetching NOAA radar data:", e);
     }
 }
 

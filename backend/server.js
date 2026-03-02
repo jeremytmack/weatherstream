@@ -157,21 +157,30 @@ app.get('/api/radar-cities', async (req, res) => {
     }
 });
 
-// RainViewer API Proxy (RADAR ONLY)
+// NOAA WMS API Proxy (RADAR FRAMES)
 app.get('/api/radar-frames', async (req, res) => {
     try {
-        const rvRes = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-        const data = await rvRes.json();
+        const noaaRes = await fetch('https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=wms&version=1.3.0&request=GetCapabilities');
+        const xml = await noaaRes.text();
 
-        // ONLY return radar timestamps (past + nowcast if present)
+        // Parse the valid time array natively using RegEx from the WMS Capabilities XML
+        const match = xml.match(/<Dimension name="time"[^>]*>([^<]+)<\/Dimension>/);
+        if (!match) {
+            return res.status(500).json({ error: 'Failed to find time dimension in NOAA WMS' });
+        }
+
+        const times = match[1].split(',');
+        // Extract the last 6 valid frames (to match previous broadcast looping intervals)
+        const past = times.slice(-6).map(time => ({ time: time }));
+
         const radar = {
-            past: data?.radar?.past ?? [],
-            nowcast: data?.radar?.nowcast ?? []
+            past: past,
+            nowcast: []
         };
 
         res.json({ radar });
     } catch (error) {
-        console.error('Error fetching rainviewer data:', error);
+        console.error('Error fetching NOAA radar data:', error);
         res.status(500).json({ error: 'Failed to fetch radar frames' });
     }
 });
