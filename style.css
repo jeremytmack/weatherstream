@@ -229,6 +229,11 @@ body {
     padding: 0;
     margin: 0;
     width: 100%;
+    position: absolute;
+    top: 125px;
+    /* right below top row */
+    height: calc(100% - 125px - 45px);
+    /* total height minus top row minus bottom bar */
 }
 
 /* In the authentic screen, city name is left-aligned over the right col */
