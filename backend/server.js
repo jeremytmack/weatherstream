@@ -157,12 +157,19 @@ app.get('/api/radar-cities', async (req, res) => {
     }
 });
 
-// RainViewer API Proxy
+// RainViewer API Proxy (RADAR ONLY)
 app.get('/api/radar-frames', async (req, res) => {
     try {
         const rvRes = await fetch('https://api.rainviewer.com/public/weather-maps.json');
         const data = await rvRes.json();
-        res.json(data);
+
+        // ONLY return radar timestamps (past + nowcast if present)
+        const radar = {
+            past: data?.radar?.past ?? [],
+            nowcast: data?.radar?.nowcast ?? []
+        };
+
+        res.json({ radar });
     } catch (error) {
         console.error('Error fetching rainviewer data:', error);
         res.status(500).json({ error: 'Failed to fetch radar frames' });
