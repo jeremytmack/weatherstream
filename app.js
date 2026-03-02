@@ -506,7 +506,7 @@ async function fetchRainviewerData(lat, lon) {
         const frames = data.radar.past.slice(-6);
 
         frames.forEach(frame => {
-            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/2/1_1.png`;
+            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/4/1_1.png`;
 
             const tileLayer = L.tileLayer(url, {
                 opacity: 0,

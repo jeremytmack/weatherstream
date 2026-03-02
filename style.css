@@ -483,7 +483,10 @@ body {
 #radar-map {
     background-color: #2b3b73;
     /* Ocean color fallback */
-    /* apply a filter to make the map look extra 90s */
+}
+
+/* apply a filter to make the basemap look extra 90s, but NOT the radar droplets! */
+#radar-map .leaflet-layer:first-child {
     filter: sepia(0.3) hue-rotate(200deg) saturate(0.5);
 }
 
