@@ -2,6 +2,15 @@ let lastPressure = null;
 let isRefreshing = false;
 
 function getLocationAndWeather() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const zipCodeParam = urlParams.get('zip');
+
+    if (zipCodeParam) {
+        // Bypass geolocation and query by URL-provided ZIP Code
+        fetchWeather(zipCodeParam);
+        return;
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
