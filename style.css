@@ -485,9 +485,9 @@ body {
     /* Slate ocean fallback */
 }
 
-/* Removed inverted CSS filter to restore lighter basemap */
-.basemap-layer {
-    opacity: 0.9;
+/* apply an exact filter to make the basemap invert into an authentic slate/purple 90s background, but crucially WITHOUT modifying the green/yellow radar droplets! */
+#radar-map .leaflet-layer:first-child {
+    filter: invert(0.8) sepia(0.3) saturate(0.4) hue-rotate(240deg) brightness(0.7) contrast(1.2);
 }
 
 .leaflet-control-attribution {
