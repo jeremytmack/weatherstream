@@ -486,7 +486,7 @@ body {
 }
 
 /* apply an exact filter to make the basemap invert into an authentic slate/purple 90s background, but crucially WITHOUT modifying the green/yellow radar droplets! */
-#radar-map .leaflet-tile-pane .leaflet-layer {
+.basemap-layer {
     filter: invert(0.8) sepia(0.3) saturate(0.4) hue-rotate(240deg) brightness(0.7) contrast(1.2);
 }
 

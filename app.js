@@ -444,9 +444,10 @@ async function initRadar(lat, lon) {
         keyboard: false
     }).setView([lat, lon], 7);
 
-    // Apply CartoDB Light No Labels tile layer for the retro base
+    // Apply CartoDB Positron No Labels tile layer for the retro base
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+        maxZoom: 19,
+        className: 'basemap-layer'
     }).addTo(radarMap);
 
     await Promise.all([
@@ -532,6 +533,10 @@ async function fetchNoaaRadarData(lat, lon) {
                 time: frame.time, // Inject native NOAA ISO-timestamp extracted from GetCapabilities
                 zIndex: 10,
                 pane: 'overlayPane'
+            });
+
+            wmsLayer.on('tileload', function (e) {
+                console.log("Loaded NOAA PNG tile:", e.tile.src);
             });
 
             wmsLayer.addTo(radarMap);
