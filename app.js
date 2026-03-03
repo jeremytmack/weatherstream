@@ -535,7 +535,9 @@ async function fetchRainviewerData(lat, lon) {
                 zIndex: 10,
                 pane: 'overlayPane',
                 updateWhenZooming: false,
-                updateWhenIdle: true
+                updateWhenIdle: true,
+                tileSize: 1024,
+                zoomOffset: -2
             });
 
             enableRetroPixelRadar(tileLayer);
