@@ -686,11 +686,24 @@ function fitScreenToTV() {
         const scaleX = boundsWidth / originalWidth;
         const scaleY = boundsHeight / originalHeight;
 
-        // Stretch to fit the CSS boundaries natively
-        screenContainer.style.transformOrigin = 'top left';
-        screenContainer.style.top = '0';
-        screenContainer.style.left = '0';
-        screenContainer.style.transform = `scale(${scaleX}, ${scaleY})`;
+        if (window.innerWidth <= 900) {
+            // Apply scale uniformly to prevent layout stretching, but explicitly widen the underlying container's height to absorb the extra screen room natively.
+            const targetHeight = boundsHeight / scaleX;
+            screenContainer.style.width = `${originalWidth}px`;
+            screenContainer.style.height = `${targetHeight}px`;
+            screenContainer.style.transformOrigin = 'top left';
+            screenContainer.style.top = '0';
+            screenContainer.style.left = '0';
+            screenContainer.style.transform = `scale(${scaleX})`;
+        } else {
+            // Stretch to fit the 1990s CRT boundaries natively on desktop
+            screenContainer.style.width = '800px';
+            screenContainer.style.height = '600px';
+            screenContainer.style.transformOrigin = 'top left';
+            screenContainer.style.top = '0';
+            screenContainer.style.left = '0';
+            screenContainer.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
     }
 }
 

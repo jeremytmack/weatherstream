@@ -208,7 +208,7 @@ body {
 .main-box {
     background-color: #3f558a;
     margin: 0 45px;
-    height: 380px;
+    height: calc(100% - 220px);
     /* The distinctive beveled border of the 90s system */
     border-top: 5px solid #859fed;
     border-left: 5px solid #859fed;
