@@ -479,6 +479,20 @@ body {
     /* make sure it fills main-box completely */
 }
 
+/* Force pixelated radar and slight upscale for chunkiness */
+.retro-radar-overlay-pane {
+    transform: scale(1.08) !important;
+    transform-origin: center center;
+}
+
+.retro-pixel-tile {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+}
+
 /* Radar Container - overrides leaflet defaults for retro look */
 #radar-map {
     background-color: #555566;

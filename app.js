@@ -533,8 +533,12 @@ async function fetchRainviewerData(lat, lon) {
             const tileLayer = L.tileLayer(url, {
                 opacity: 0,
                 zIndex: 10,
-                pane: 'overlayPane'
+                pane: 'overlayPane',
+                updateWhenZooming: false,
+                updateWhenIdle: true
             });
+
+            enableRetroPixelRadar(tileLayer);
 
             tileLayer.addTo(radarMap);
             radarLayers.push(tileLayer);
@@ -563,6 +567,21 @@ function animateRadar() {
     radarLayers[currentRadarFrame].setOpacity(0);
     currentRadarFrame = (currentRadarFrame + 1) % radarLayers.length;
     radarLayers[currentRadarFrame].setOpacity(0.65);
+}
+
+function enableRetroPixelRadar(layer) {
+    // Upscale the overlay pane slightly to increase 'chunk' size without throwing off coordinates
+    const overlayPane = radarMap.getPane('overlayPane');
+    if (overlayPane && !overlayPane.classList.contains('retro-radar-overlay-pane')) {
+        overlayPane.classList.add('retro-radar-overlay-pane');
+    }
+
+    // Assign pixelation CSS to every loaded tile to prevent browser smoothing/blurring
+    layer.on('tileload', (e) => {
+        if (e.tile) {
+            e.tile.classList.add('retro-pixel-tile');
+        }
+    });
 }
 
 // --- Music Player ---
