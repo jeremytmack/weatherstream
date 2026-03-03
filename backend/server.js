@@ -147,9 +147,21 @@ app.get('/api/radar-cities', async (req, res) => {
         const { lat, lon } = req.query;
         if (!lat || !lon) return res.status(400).json({ error: 'lat and lon required' });
 
-        const query = `[out:json];node(around:250000,${lat},${lon})["place"="city"];out 6;`;
+        // Query Overpass for all cities with a population tag within ~155 miles (250km)
+        const query = `[out:json];node(around:250000,${lat},${lon})["place"="city"]["population"];out;`;
         const overpassRes = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
         const data = await overpassRes.json();
+
+        if (data && data.elements) {
+            // Sort the cities strictly by population in descending order
+            data.elements.sort((a, b) => {
+                const popA = parseInt(a.tags.population) || 0;
+                const popB = parseInt(b.tags.population) || 0;
+                return popB - popA;
+            });
+            // Slice the top 4 major cities for cleaner map display
+            data.elements = data.elements.slice(0, 4);
+        }
         res.json(data);
     } catch (error) {
         console.error('Error fetching nearby cities:', error);

@@ -629,7 +629,8 @@ setInterval(refreshData, 15 * 60 * 1000);
 
 let screenIntervalTimer;
 
-document.getElementById('enter-button').addEventListener('click', () => {
+document.getElementById('enter-button').addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent bubbling up to the tv-wrapper skip handler!
     document.getElementById('loading-screen').style.display = 'none';
     initMusic();
     if (radarMap) {
