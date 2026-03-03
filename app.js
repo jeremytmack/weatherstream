@@ -687,14 +687,25 @@ function fitScreenToTV() {
         const scaleY = boundsHeight / originalHeight;
 
         if (window.innerWidth <= 900) {
-            // Apply scale uniformly to prevent layout stretching, but explicitly widen the underlying container's height to absorb the extra screen room natively.
-            const targetHeight = boundsHeight / scaleX;
-            screenContainer.style.width = `${originalWidth}px`;
+            let scale, targetWidth, targetHeight;
+            if (boundsWidth > boundsHeight) {
+                // Landscape: Fit to height vertically, expand width fully
+                scale = scaleY;
+                targetWidth = boundsWidth / scale;
+                targetHeight = originalHeight;
+            } else {
+                // Portrait: Fit to width horizontally, expand height fully
+                scale = scaleX;
+                targetWidth = originalWidth;
+                targetHeight = boundsHeight / scale;
+            }
+            // Apply scale uniformly to prevent layout stretching, but explicitly widen the underlying container to absorb the extra screen room natively.
+            screenContainer.style.width = `${targetWidth}px`;
             screenContainer.style.height = `${targetHeight}px`;
             screenContainer.style.transformOrigin = 'top left';
             screenContainer.style.top = '0';
             screenContainer.style.left = '0';
-            screenContainer.style.transform = `scale(${scaleX})`;
+            screenContainer.style.transform = `scale(${scale})`;
         } else {
             // Stretch to fit the 1990s CRT boundaries natively on desktop
             screenContainer.style.width = '800px';
