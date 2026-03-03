@@ -444,9 +444,10 @@ async function initRadar(lat, lon) {
         keyboard: false
     }).setView([lat, lon], 7);
 
-    // Apply CartoDB Light No Labels tile layer for the retro base
+    // Apply CartoDB Positron No Labels tile layer for the retro base
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+        maxZoom: 19,
+        className: 'basemap-layer'
     }).addTo(radarMap);
 
     await Promise.all([
@@ -527,7 +528,7 @@ async function fetchRainviewerData(lat, lon) {
         const frames = data.radar.past.slice(-6);
 
         frames.forEach(frame => {
-            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/4/1_0.png`;
+            const url = `https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/6/1_0.png`;
 
             const tileLayer = L.tileLayer(url, {
                 opacity: 0,

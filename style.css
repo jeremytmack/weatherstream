@@ -486,7 +486,7 @@ body {
 }
 
 /* apply an exact filter to make the basemap invert into an authentic slate/purple 90s background, but crucially WITHOUT modifying the green/yellow radar droplets! */
-#radar-map .leaflet-layer:first-child {
+.basemap-layer {
     filter: invert(0.8) sepia(0.3) saturate(0.4) hue-rotate(240deg) brightness(0.7) contrast(1.2);
 }
 
@@ -553,19 +553,19 @@ body {
     border-right: none;
 }
 
-/* Define authentic precip colors */
+/* Define authentic precip colors to exactly match the classic TWC broadcast */
 .c-l1 {
-    background-color: #90ee90;
+    background-color: #a1ff9b;
 }
 
 /* Light Green */
 .c-l2 {
-    background-color: #00ff00;
+    background-color: #01ff00;
 }
 
 /* Green */
 .c-l3 {
-    background-color: #008000;
+    background-color: #009a00;
 }
 
 /* Dark Green */
@@ -575,7 +575,7 @@ body {
 
 /* Yellow */
 .c-m2 {
-    background-color: #ffcc00;
+    background-color: #ffc800;
 }
 
 /* Orange/Yellow */
@@ -591,10 +591,10 @@ body {
 }
 
 .c-inc {
-    background-color: #ffb6c1;
-    /* Pink for incomplete data */
+    background-color: #fca3a3;
+    /* Pinkish for incomplete data */
     margin-right: 5px;
-    border: 1px solid #000;
+    border: 2px solid #000;
 }
 
 /* City Label on map */
