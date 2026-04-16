@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
+const cities = require('all-the-cities');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
@@ -141,28 +142,51 @@ app.get('/api/extended-forecast', async (req, res) => {
     }
 });
 
-// Overpass API Proxy
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;  
+    const dLon = (lon2 - lon1) * Math.PI / 180; 
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    return R * c; 
+}
+
+// Local City Database Search
 app.get('/api/radar-cities', async (req, res) => {
     try {
-        const { lat, lon } = req.query;
-        if (!lat || !lon) return res.status(400).json({ error: 'lat and lon required' });
+        const queryLat = parseFloat(req.query.lat);
+        const queryLon = parseFloat(req.query.lon);
+        if (isNaN(queryLat) || isNaN(queryLon)) return res.status(400).json({ error: 'lat and lon required' });
 
-        // Query Overpass for all cities with a population tag within ~155 miles (250km)
-        const query = `[out:json];node(around:250000,${lat},${lon})["place"="city"]["population"];out;`;
-        const overpassRes = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-        const data = await overpassRes.json();
+        let nearby = [];
+        for (const city of cities) {
+            const cityLon = city.loc.coordinates[0];
+            const cityLat = city.loc.coordinates[1];
+            
+            if (Math.abs(cityLat - queryLat) > 2.5 || Math.abs(cityLon - queryLon) > 3) continue;
 
-        if (data && data.elements) {
-            // Sort the cities strictly by population in descending order
-            data.elements.sort((a, b) => {
-                const popA = parseInt(a.tags.population) || 0;
-                const popB = parseInt(b.tags.population) || 0;
-                return popB - popA;
-            });
-            // Slice the top 4 major cities for cleaner map display
-            data.elements = data.elements.slice(0, 4);
+            const dist = getDistance(queryLat, queryLon, cityLat, cityLon);
+            if (dist <= 250) {
+                nearby.push({ city, dist });
+            }
         }
-        res.json(data);
+
+        nearby.sort((a, b) => (b.city.population || 0) - (a.city.population || 0));
+        const top4 = nearby.slice(0, 4);
+        
+        const elements = top4.map(entry => ({
+            lat: entry.city.loc.coordinates[1],
+            lon: entry.city.loc.coordinates[0],
+            tags: {
+                name: entry.city.name,
+                population: (entry.city.population || 0).toString()
+            }
+        }));
+
+        res.json({ elements });
     } catch (error) {
         console.error('Error fetching nearby cities:', error);
         res.status(500).json({ error: 'Failed to fetch cities' });
@@ -191,6 +215,7 @@ app.get('/api/radar-frames', async (req, res) => {
 // AI City Abbreviation Endpoint
 app.post('/api/city-abbrs', async (req, res) => {
     try {
+        const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
         const { cities } = req.body;
         if (!cities || !Array.isArray(cities)) {
             return res.status(400).json({ error: 'Array of cities is required' });

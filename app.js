@@ -203,7 +203,7 @@ function mapWeatherCode(code) {
     else if (code >= 80 && code <= 82) { desc = "Showers"; icon = "rain"; }
     else if (code >= 95 && code <= 99) { desc = "Scattered<br>T'Storms"; icon = "thunderstorms-day"; }
 
-    return { desc, icon: `https://basmilius.github.io/weather-icons/production/fill/all/${icon}.svg` };
+    return { desc, icon: `https://cdn.jsdelivr.net/gh/basmilius/weather-icons@v1.5.0/production/fill/all/${icon}.svg` };
 }
 
 function getAnimatedIcon(code, isDay) {
@@ -241,7 +241,7 @@ function getAnimatedIcon(code, isDay) {
         case 1279: case 1282: iconName = "thunderstorms-snow"; break;
     }
 
-    return `https://basmilius.github.io/weather-icons/production/fill/all/${iconName}.svg`;
+    return `https://cdn.jsdelivr.net/gh/basmilius/weather-icons@v1.5.0/production/fill/all/${iconName}.svg`;
 }
 
 function updateUI(data) {
